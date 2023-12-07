@@ -1,14 +1,11 @@
 package com.example.demo.Student;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "api/v1/student")
+@RequestMapping(path = "/student")
 public class StudentController {
 
     private final StudentService studentService;
@@ -18,8 +15,22 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping
-    public List<Student> getStudents(){
-        return studentService.getStudents();
+    @PostMapping(path = "/add")
+    public @ResponseBody ResponseEntity<Student> addNewStudent(@RequestBody Student student) {
+        try {
+            Student savedStudent = studentService.save(student);
+            return ResponseEntity.ok(savedStudent);
+        } catch (Exception e) {
+            // Handle the exception and return an appropriate response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
+
+    @GetMapping(path = "/all")
+    public @ResponseBody Iterable<Student> getStudents(){
+        return studentService.findAll();
+    }
+
+
 }
